@@ -1,0 +1,19 @@
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+
+women <- read.csv2('women_results.csv', sep = ',', row.names = 'X')
+men <- read.csv2('men_results.csv', sep = ',', row.names = 'X')
+women <- women %>% filter(date > '2002-01-01', tournament == "FIFA World Cup")
+men <- men %>% filter(date > '2002-01-01', tournament == "FIFA World Cup")
+women$goals_match_sum <- women$home_score + women$away_score
+men$goals_match_sum <- men$home_score + men$away_score
+ggplot(women, aes(x = goals_match_sum)) + geom_histogram(binwidth = 1) #graph shows it might not be normal distribution
+ggplot(men, aes(x = goals_match_sum)) + geom_histogram(binwidth = 1) #graph shows it might not be normal distribution
+shapiro.test(women$goals_match_sum) #p_value equals 3.891e-13 so it is not normal distribution
+shapiro.test(men$goals_match_sum) #p_value equals 8.895e-13 so it is not normal distribution
+wilcox.test(women$goals_match_sum, men$goals_match_sum, alternative = 'greater', conf.level = 0.1) #it is not normal distribution so I used wilcox test instead of t test
+
+CONCLUSION:
+Wilcox.test p_value equals 0.0051. I chose confidence level at 0.1 so it indicates me to reject null hypothesis and accept alternative hypothesis.
+There are more goals scored in women soccer matches than in men matches.
